@@ -21,4 +21,33 @@ const createDirector = async (req, res) => {
   res.status(200).send(result);
 };
 
-module.exports = createDirector;
+const getDirectorWithMovies = async (req, res) => {
+  const directorWithMovies = await Director.aggregate([
+    {
+      $lookup: {
+        from: "movies",
+        localField: "_id",
+        foreignField: "movieDirector",
+        as: "Movies",
+      },
+    },
+  ]);
+  if (!directorWithMovies) {
+    res.status(404).send("director not found");
+    return;
+  }
+  res.status(200).send(directorWithMovies);
+};
+
+const deleteDirector = async (req, res) => {
+  const director = await Director.findById(req.params.id);
+
+  if (!director) {
+    res.status(404).send("director not found");
+    return;
+  }
+  const result = await Director.deleteOne({ _id: req.params.id });
+  res.status(200).send(result);
+};
+
+module.exports = { createDirector, getDirectorWithMovies, deleteDirector };

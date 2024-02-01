@@ -23,6 +23,12 @@ const directorSchema = new mongoose.Schema({
   },
 });
 
-const Directors = mongoose.model("Directors", directorSchema);
+directorSchema.virtual("movies", {
+  ref: "Movie",
+  localField: "_id",
+  foreignField: "movieDirector",
+});
 
-module.exports = Directors;
+const Director = mongoose.model("Director", directorSchema);
+
+module.exports = Director;
